@@ -68,15 +68,10 @@
             
             {{-- Brand Logo Header --}}
             <div class="h-20 flex items-center justify-between px-6 border-b border-slate-800/80">
-                <a href="{{ route('penjual.produk') }}" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-orange-500 to-amber-400 flex items-center justify-center text-white font-black text-base shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
-                        TS
-                    </div>
+                <a href="{{ route('penjual.produk') }}" class="group">
                     <div>
                         <span class="font-extrabold text-lg text-white tracking-wide block leading-tight">TukuSepatu</span>
-                        <span class="text-[11px] font-semibold tracking-wider uppercase text-brand-400 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Seller Hub
-                        </span>
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-brand-400">Seller Hub</span>
                     </div>
                 </a>
                 <button id="closeSidebar" class="lg:hidden text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded">
@@ -157,13 +152,6 @@
                         <span>Tambah Produk</span>
                     </a>
 
-                    {{-- Notification Button --}}
-                    <div class="relative">
-                        <button id="notifBtn" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200/80 text-xs font-bold transition relative flex items-center gap-1.5">
-                            <span>Notifikasi</span>
-                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                        </button>
-                    </div>
 
                     {{-- Divider --}}
                     <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>

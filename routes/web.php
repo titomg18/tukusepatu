@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PembeliController;
+use App\Http\Controllers\PenjualOrderController;
 use App\Http\Controllers\ProdukController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -25,8 +27,23 @@ Route::middleware('auth')->prefix('pembeli')->name('pembeli.')->group(function (
             abort(403);
         }
 
-        return view('pembeli.dashboard');
+        return app(PembeliController::class)->dashboard(request());
     })->name('dashboard');
+
+    // Keranjang Belanja
+    Route::get('/keranjang', [PembeliController::class, 'keranjang'])->name('keranjang');
+    Route::post('/keranjang/tambah', [PembeliController::class, 'addToCart'])->name('keranjang.add');
+    Route::post('/keranjang/update', [PembeliController::class, 'updateCart'])->name('keranjang.update');
+    Route::post('/keranjang/hapus', [PembeliController::class, 'removeFromCart'])->name('keranjang.remove');
+
+    // Checkout & Order
+    Route::get('/checkout', [PembeliController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout', [PembeliController::class, 'processCheckout'])->name('checkout.process');
+
+    // Pesanan & Bukti Bayar
+    Route::get('/pesanan', [PembeliController::class, 'orders'])->name('order.index');
+    Route::get('/pesanan/{id}', [PembeliController::class, 'showOrder'])->name('order.show');
+    Route::post('/pesanan/{id}/upload-bukti', [PembeliController::class, 'uploadBuktiBayar'])->name('order.upload_bukti');
 });
 
 // ====== Penjual ======
@@ -47,13 +64,9 @@ Route::middleware('auth')->prefix('penjual')->name('penjual.')->group(function (
     Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
 
-    Route::get('/pesanan', function () {
-        if (Auth::user()->role !== 'penjual') {
-            abort(403);
-        }
-
-        return view('penjual.pesanan');
-    })->name('pesanan');
+    // Manajemen Pesanan Masuk Penjual
+    Route::get('/pesanan', [PenjualOrderController::class, 'index'])->name('pesanan');
+    Route::put('/pesanan/{id}/status', [PenjualOrderController::class, 'updateStatus'])->name('pesanan.update_status');
 
     Route::get('/toko', function () {
         if (Auth::user()->role !== 'penjual') {

@@ -1,235 +1,127 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pembeli - Toko Sepatu</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-50 min-h-screen">
+@extends('layouts.pembeli')
 
-    {{-- ============ NAVBAR ============ --}}
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+@section('title', 'TukuSepatu - Katalog Sepatu Pilihan')
 
-                {{-- Logo --}}
-                <a href="{{ route('pembeli.dashboard') }}" class="flex items-center gap-2">
-                    <span class="text-2xl">👟</span>
-                    <span class="font-bold text-xl text-gray-800">Toko Sepatu</span>
+@section('content')
+<div class="space-y-8">
+
+    {{-- Welcome Hero Banner --}}
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-brand-900 text-white p-6 sm:p-10 shadow-xl border border-slate-700/50">
+        <div class="relative z-10 space-y-3 max-w-2xl">
+            <span class="bg-brand-500/20 text-brand-300 font-bold px-3 py-1 rounded-full border border-brand-500/30 text-xs inline-block">
+                Koleksi Terlengkap & Original
+            </span>
+            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Halo {{ Auth::user()->nama_user }}, Temukan Sepatu Impianmu
+            </h1>
+            <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Pilih berbagai koleksi sepatu sneakers, running, formal, dan kasual berkualitas terbaik dari penjual terpercaya di seluruh Indonesia.
+            </p>
+        </div>
+    </div>
+
+    {{-- Filter & Search Form --}}
+    <form action="{{ route('pembeli.dashboard') }}" method="GET" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col md:flex-row gap-3 justify-between items-center text-xs">
+        <div class="relative w-full md:w-96">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama sepatu favoritmu..." 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 text-xs font-medium">
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+            <select name="kategori" onchange="this.form.submit()" class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700 focus:outline-none">
+                <option value="Semua Kategori">Semua Kategori</option>
+                @foreach(['Sneakers', 'Running', 'Casual', 'Formal', 'Boots', 'Sport'] as $cat)
+                    <option value="{{ $cat }}" {{ request('kategori') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold transition">
+                Cari
+            </button>
+            @if(request('search') || request('kategori'))
+                <a href="{{ route('pembeli.dashboard') }}" class="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold">
+                    Reset
                 </a>
+            @endif
+        </div>
+    </form>
 
-                {{-- Search --}}
-                <div class="hidden md:flex flex-1 max-w-md mx-8">
-                    <div class="relative w-full">
-                        <input type="text" placeholder="Cari sepatu favoritmu..."
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    </div>
-                </div>
+    {{-- Products Grid --}}
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-extrabold text-slate-900">Daftar Sepatu Sepatu Terbaru</h2>
+            <span class="text-xs text-slate-400 font-semibold">{{ count($produks) }} Produk Ditemukan</span>
+        </div>
 
-                {{-- Menu Kanan --}}
-                <div class="flex items-center gap-4">
-                    <a href="#" class="relative text-gray-600 hover:text-blue-600 transition">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-                    </a>
+        @if(count($produks) > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($produks as $p)
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 hover:shadow-md transition group flex flex-col justify-between">
+                        <div>
+                            {{-- Product Image / Badge --}}
+                            <div class="h-48 bg-slate-100 flex items-center justify-center relative p-4 overflow-hidden">
+                                @if($p->gambar_product)
+                                    <img src="{{ asset('storage/' . $p->gambar_product) }}" alt="{{ $p->nama_product }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                @else
+                                    <span class="text-3xl font-black text-slate-400 group-hover:scale-110 transition-transform">
+                                        {{ strtoupper(substr($p->nama_product, 0, 2)) }}
+                                    </span>
+                                @endif
 
-                    <a href="#" class="relative text-gray-600 hover:text-blue-600 transition">
-                        <i class="fas fa-bell text-xl"></i>
-                    </a>
-
-                    {{-- Profil Dropdown --}}
-                    <div class="relative group">
-                        <button class="flex items-center gap-2 focus:outline-none">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                                {{ strtoupper(substr(Auth::user()->nama_user, 0, 1)) }}
+                                <span class="absolute top-3 left-3 text-[10px] font-bold {{ $p->status_product === 'habis' || $p->stok < 1 ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200' }} border px-2.5 py-0.5 rounded-full">
+                                    {{ $p->status_product === 'habis' || $p->stok < 1 ? 'Stok Habis' : 'Tersedia' }}
+                                </span>
+                                <span class="absolute top-3 right-3 text-[10px] font-bold bg-white/90 backdrop-blur-sm text-slate-700 px-2 py-0.5 rounded-md border border-slate-200">
+                                    {{ $p->kategori ?? 'Umum' }}
+                                </span>
                             </div>
-                            <span class="hidden md:block text-sm font-medium text-gray-700">{{ Auth::user()->nama_user }}</span>
-                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
-                        </button>
 
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-user w-4"></i> Profil Saya
-                            </a>
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-box w-4"></i> Pesanan Saya
-                            </a>
-                            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-heart w-4"></i> Wishlist
-                            </a>
-                            <hr class="my-1">
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                    <i class="fas fa-sign-out-alt w-4"></i> Logout
+                            {{-- Product Info --}}
+                            <div class="p-4 space-y-2">
+                                <h3 class="font-extrabold text-sm text-slate-800 line-clamp-1" title="{{ $p->nama_product }}">
+                                    {{ $p->nama_product }}
+                                </h3>
+                                <p class="text-xs text-slate-400 line-clamp-2">{{ $p->deskripsi ?? 'Sepatu berkualitas tinggi nyaman dipakai sehari-hari.' }}</p>
+
+                                <div class="pt-2 flex items-center justify-between">
+                                    <span class="text-base font-extrabold text-brand-600">
+                                        Rp {{ number_format($p->harga, 0, ',', '.') }}
+                                    </span>
+                                    <span class="text-[11px] text-slate-400 font-semibold">
+                                        Sisa: {{ $p->stok }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Add to Cart Form --}}
+                        <div class="p-4 pt-0">
+                            @if($p->status_product !== 'habis' && $p->stok > 0)
+                                <form action="{{ route('pembeli.keranjang.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id_product" value="{{ $p->id_product }}">
+                                    <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5">
+                                        <span>+ Tambahkan ke Keranjang</span>
+                                    </button>
+                                </form>
+                            @else
+                                <button disabled class="w-full py-2.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed">
+                                    Stok Habis
                                 </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    {{-- ============ ALERT ============ --}}
-    @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 mt-4">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded">
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
-
-    {{-- ============ CONTENT ============ --}}
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {{-- Welcome Banner --}}
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 relative overflow-hidden">
-            <div class="relative z-10">
-                <p class="text-blue-100 text-sm">Selamat datang kembali,</p>
-                <h1 class="text-3xl font-bold mt-1">{{ Auth::user()->nama_user }} 👋</h1>
-                <p class="text-blue-100 mt-2">Temukan sepatu impianmu hari ini!</p>
-                <button class="mt-4 bg-white text-blue-600 font-semibold px-5 py-2 rounded-lg hover:bg-blue-50 transition">
-                    <i class="fas fa-shopping-bag mr-2"></i>Mulai Belanja
-                </button>
-            </div>
-            <div class="absolute right-0 top-0 h-full w-1/3 flex items-center justify-center opacity-10 text-9xl">
-                👟
-            </div>
-        </div>
-
-        {{-- Statistik --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-xs">Total Pesanan</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-box text-blue-600"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-xs">Dikirim</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-truck text-yellow-600"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-xs">Selesai</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-check-circle text-green-600"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-xs">Wishlist</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-heart text-red-500"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Kategori --}}
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800">Kategori Populer</h2>
-                <a href="#" class="text-sm text-blue-600 hover:underline">Lihat semua</a>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @php
-                    $kategori = [
-                        ['nama' => 'Sneakers', 'icon' => '👟', 'bg' => 'from-blue-400 to-blue-600'],
-                        ['nama' => 'Running',  'icon' => '🏃', 'bg' => 'from-green-400 to-green-600'],
-                        ['nama' => 'Formal',   'icon' => '👞', 'bg' => 'from-gray-600 to-gray-800'],
-                        ['nama' => 'Boots',    'icon' => '🥾', 'bg' => 'from-orange-400 to-orange-600'],
-                    ];
-                @endphp
-
-                @foreach($kategori as $k)
-                    <a href="#" class="bg-gradient-to-br {{ $k['bg'] }} rounded-xl p-6 text-white text-center hover:scale-105 transition-transform">
-                        <div class="text-4xl mb-2">{{ $k['icon'] }}</div>
-                        <p class="font-semibold">{{ $k['nama'] }}</p>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Produk Terbaru --}}
-        <div>
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-bold text-gray-800">Produk Terbaru</h2>
-                <a href="#" class="text-sm text-blue-600 hover:underline">Lihat semua</a>
-            </div>
-
-            @php
-                $produk = [
-                    ['nama' => 'Nike Air Max 270',  'harga' => 1500000, 'rating' => 4.8, 'terjual' => 120],
-                    ['nama' => 'Adidas Ultraboost', 'harga' => 1850000, 'rating' => 4.9, 'terjual' => 95],
-                    ['nama' => 'Puma RS-X',         'harga' => 1200000, 'rating' => 4.7, 'terjual' => 78],
-                    ['nama' => 'Converse Chuck',    'harga' => 750000,  'rating' => 4.6, 'terjual' => 200],
-                ];
-            @endphp
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach($produk as $p)
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
-                        <div class="h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
-                            <span class="text-6xl group-hover:scale-110 transition-transform">👟</span>
-                            <button class="absolute top-2 right-2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-gray-400 hover:text-red-500">
-                                <i class="fas fa-heart text-sm"></i>
-                            </button>
-                        </div>
-                        <div class="p-3">
-                            <h3 class="font-semibold text-sm text-gray-800 truncate">{{ $p['nama'] }}</h3>
-                            <div class="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                                <i class="fas fa-star text-yellow-400"></i>
-                                <span>{{ $p['rating'] }}</span>
-                                <span>·</span>
-                                <span>{{ $p['terjual'] }} terjual</span>
-                            </div>
-                            <p class="text-blue-600 font-bold mt-2">
-                                Rp {{ number_format($p['harga'], 0, ',', '.') }}
-                            </p>
-                            <button class="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-                                <i class="fas fa-cart-plus mr-1"></i> Keranjang
-                            </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach
             </div>
-        </div>
+        @else
+            <div class="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm space-y-3">
+                <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-500 font-black text-xl flex items-center justify-center mx-auto">
+                    TS
+                </div>
+                <h3 class="font-extrabold text-slate-800 text-base">Tidak Ada Produk Ditemukan</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto">Coba cari dengan kata kunci lain atau pilih kategori sepatu yang tersedia.</p>
+            </div>
+        @endif
+    </div>
 
-    </main>
-
-    {{-- ============ FOOTER ============ --}}
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-            © {{ date('Y') }} Toko Sepatu. All rights reserved.
-        </div>
-    </footer>
-
-</body>
-</html>
+</div>
+@endsection

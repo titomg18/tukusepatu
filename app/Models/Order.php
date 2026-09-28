@@ -6,6 +6,7 @@ use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -57,5 +58,15 @@ class Order extends Model
     public function pembeli(): BelongsTo
     {
         return $this->belongsTo(User::class, 'pembeli_id', 'id_user');
+    }
+
+    /**
+     * Relasi ke Detail Order.
+     *
+     * @return HasMany<DetailOrder, $this>
+     */
+    public function details(): HasMany
+    {
+        return $this->hasMany(DetailOrder::class, 'order_id', 'id_order');
     }
 }

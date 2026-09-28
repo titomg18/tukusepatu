@@ -2,85 +2,158 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Register - Toko Sepatu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akun Baru - TukuSepatu</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-500 to-indigo-600 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4 py-8 sm:py-12 relative overflow-y-auto">
 
-<div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-    <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">👟 Toko Sepatu</h1>
-        <p class="text-gray-500 mt-1">Buat akun baru</p>
-    </div>
+    {{-- Ambient Decorative Background Glows --}}
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    @if($errors->any())
-        <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('register.post') }}" method="POST" class="space-y-4">
-        @csrf
-
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
-            <input type="text" name="nama_user" value="{{ old('nama_user') }}" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border border-slate-100 relative z-10 space-y-6 my-8">
+        
+        {{-- Header Brand --}}
+        <div class="text-center space-y-1">
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">TukuSepatu</h1>
+            <p class="text-xs text-slate-400">Buat akun baru untuk mulai berbelanja atau berjualan</p>
         </div>
 
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-            <input type="email" name="email" value="{{ old('email') }}" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-            <input type="password" name="password" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Konfirmasi Password</label>
-            <input type="password" name="password_confirmation" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-        </div>
-
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Daftar Sebagai</label>
-            <div class="flex gap-4">
-                <label class="flex-1 cursor-pointer">
-                    <input type="radio" name="role" value="pembeli" class="peer hidden"
-                           {{ old('role') == 'pembeli' ? 'checked' : '' }} required>
-                    <div class="border-2 border-gray-300 rounded-lg py-2 text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-semibold transition">
-                        🛍️ Pembeli
-                    </div>
-                </label>
-                <label class="flex-1 cursor-pointer">
-                    <input type="radio" name="role" value="penjual" class="peer hidden"
-                           {{ old('role') == 'penjual' ? 'checked' : '' }}>
-                    <div class="border-2 border-gray-300 rounded-lg py-2 text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-semibold transition">
-                        🏪 Penjual
-                    </div>
-                </label>
+        {{-- Errors Alert --}}
+        @if($errors->any())
+            <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-2xl text-xs space-y-1">
+                <p class="font-bold">Terdapat kesalahan:</p>
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+        @endif
+
+        {{-- Register Form --}}
+        <form action="{{ route('register.post') }}" method="POST" class="space-y-4">
+            @csrf
+
+            {{-- Role Selector Cards --}}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Daftar Sebagai <span class="text-rose-500">*</span>
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="role" value="pembeli" class="peer hidden"
+                               {{ old('role', 'pembeli') == 'pembeli' ? 'checked' : '' }} required>
+                        <div class="p-3 border-2 border-slate-200 rounded-2xl text-center peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-700 transition">
+                            <span class="block text-xs font-bold">Pembeli</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Ingin beli sepatu</span>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer">
+                        <input type="radio" name="role" value="penjual" class="peer hidden"
+                               {{ old('role') == 'penjual' ? 'checked' : '' }}>
+                        <div class="p-3 border-2 border-slate-200 rounded-2xl text-center peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-700 transition">
+                            <span class="block text-xs font-bold">Penjual</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Ingin jual sepatu</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Nama Lengkap --}}
+            <div>
+                <label for="nama_user" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Nama Lengkap <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" name="nama_user" id="nama_user" value="{{ old('nama_user') }}" required
+                       placeholder="Contoh: Ahmad Fauzi"
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+            </div>
+
+            {{-- Email --}}
+            <div>
+                <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Alamat Email <span class="text-rose-500">*</span>
+                </label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                       placeholder="nama@email.com"
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+            </div>
+
+            {{-- Password --}}
+            <div>
+                <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Password <span class="text-rose-500">*</span>
+                </label>
+                <input type="password" name="password" id="password" required
+                       placeholder="Minimal 6 karakter"
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+            </div>
+
+            {{-- Konfirmasi Password --}}
+            <div>
+                <label for="password_confirmation" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Konfirmasi Password <span class="text-rose-500">*</span>
+                </label>
+                <input type="password" name="password_confirmation" id="password_confirmation" required
+                       placeholder="Ulangi password kamu"
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+            </div>
+
+            <button type="submit"
+                    class="w-full py-3 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition active:scale-[0.98]">
+                Daftar Akun Baru
+            </button>
+        </form>
+
+        {{-- Footer Login Link --}}
+        <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            <span>Sudah memiliki akun?</span>
+            <a href="{{ route('login') }}" class="font-bold text-brand-600 hover:text-brand-700 hover:underline ml-1">
+                Masuk di sini &rarr;
+            </a>
         </div>
 
-        <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
-            Daftar
-        </button>
-    </form>
-
-    <p class="text-center text-sm text-gray-600 mt-6">
-        Sudah punya akun?
-        <a href="{{ route('login') }}" class="text-blue-600 font-semibold hover:underline">Login di sini</a>
-    </p>
-</div>
+    </div>
 
 </body>
 </html>
