@@ -8,9 +8,9 @@
     {{-- Welcome Hero Banner --}}
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-brand-900 text-white p-6 sm:p-10 shadow-xl border border-slate-700/50">
         <div class="relative z-10 space-y-3 max-w-2xl">
-            <span class="bg-brand-500/20 text-brand-300 font-bold px-3 py-1 rounded-full border border-brand-500/30 text-xs inline-block">
+            {{-- <span class="bg-brand-500/20 text-brand-300 font-bold px-3 py-1 rounded-full border border-brand-500/30 text-xs inline-block">
                 Koleksi Terlengkap & Original
-            </span>
+            </span> --}}
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                 @auth
                     Halo {{ Auth::user()->nama_user }}, Temukan Sepatu Impianmu
