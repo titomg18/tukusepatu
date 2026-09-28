@@ -35,6 +35,16 @@ class PembeliController extends Controller
     }
 
     /**
+     * Tampilkan halaman detail produk sepatu.
+     */
+    public function showProduct(int $id): View
+    {
+        $produk = Produk::with('penjual')->findOrFail($id);
+
+        return view('pembeli.produk_detail', compact('produk'));
+    }
+
+    /**
      * Tambahkan produk ke keranjang belanja (Session).
      */
     public function addToCart(Request $request): RedirectResponse

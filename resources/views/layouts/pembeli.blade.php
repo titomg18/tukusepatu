@@ -75,17 +75,19 @@
                     {{-- Navigation Tabs --}}
                     <nav class="hidden md:flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl text-xs font-bold">
                         <a href="{{ route('pembeli.dashboard') }}" 
-                           class="px-4 py-2 rounded-xl transition-all {{ request()->routeIs('pembeli.dashboard') ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                           class="px-4 py-2 rounded-xl transition-all {{ request()->routeIs('pembeli.dashboard') || request()->is('/') ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
                             Beranda
                         </a>
-                        <a href="{{ route('pembeli.order.index') }}" 
-                           class="px-4 py-2 rounded-xl transition-all {{ request()->routeIs('pembeli.order.*') ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
-                            Pesanan Saya
-                        </a>
+                        @auth
+                            <a href="{{ route('pembeli.order.index') }}" 
+                               class="px-4 py-2 rounded-xl transition-all {{ request()->routeIs('pembeli.order.*') ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:text-slate-900' }}">
+                                Pesanan Saya
+                            </a>
+                        @endauth
                     </nav>
                 </div>
 
-                {{-- Right Actions: Keranjang & Profile --}}
+                {{-- Right Actions: Keranjang & Auth --}}
                 <div class="flex items-center gap-3 sm:gap-4">
                     
                     {{-- Keranjang Belanja Button --}}
@@ -101,53 +103,77 @@
                         </span>
                     </a>
 
-                    {{-- User Profile Dropdown --}}
-                    <div class="relative group">
-                        <button class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-sm shadow-sm">
-                                {{ strtoupper(substr(Auth::user()->nama_user ?? 'U', 0, 1)) }}
-                            </div>
-                            <div class="hidden sm:block text-left">
-                                <span class="block text-xs font-bold text-slate-800 leading-none">{{ Auth::user()->nama_user ?? 'Pembeli' }}</span>
-                                <span class="text-[10px] text-slate-400 font-semibold mt-0.5 block">Akun Pembeli</span>
-                            </div>
-                        </button>
+                    @auth
+                        {{-- User Profile Dropdown --}}
+                        <div class="relative group">
+                            <button class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-sm shadow-sm">
+                                    {{ strtoupper(substr(Auth::user()->nama_user ?? 'U', 0, 1)) }}
+                                </div>
+                                <div class="hidden sm:block text-left">
+                                    <span class="block text-xs font-bold text-slate-800 leading-none">{{ Auth::user()->nama_user }}</span>
+                                    <span class="text-[10px] text-slate-400 font-semibold mt-0.5 block capitalize">{{ Auth::user()->role }}</span>
+                                </div>
+                            </button>
 
-                        {{-- Dropdown Menu --}}
-                        <div class="absolute right-0 mt-2 w-56 bg-white text-slate-800 rounded-2xl shadow-xl border border-slate-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div class="px-4 py-2.5 border-b border-slate-100">
-                                <p class="text-xs font-bold text-slate-800">{{ Auth::user()->nama_user ?? 'User' }}</p>
-                                <p class="text-[11px] text-slate-400">{{ Auth::user()->email ?? 'user@tukusepatu.id' }}</p>
+                            {{-- Dropdown Menu --}}
+                            <div class="absolute right-0 mt-2 w-56 bg-white text-slate-800 rounded-2xl shadow-xl border border-slate-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="px-4 py-2.5 border-b border-slate-100">
+                                    <p class="text-xs font-bold text-slate-800">{{ Auth::user()->nama_user }}</p>
+                                    <p class="text-[11px] text-slate-400">{{ Auth::user()->email }}</p>
+                                </div>
+
+                                @if(Auth::user()->role === 'penjual')
+                                    <a href="{{ route('penjual.produk') }}" class="block px-4 py-2.5 text-xs font-bold text-brand-600 hover:bg-brand-50 transition">
+                                        Panel Penjual
+                                    </a>
+                                    <hr class="my-1 border-slate-100">
+                                @endif
+
+                                <a href="{{ route('pembeli.dashboard') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                    Katalog Sepatu
+                                </a>
+                                <a href="{{ route('pembeli.keranjang') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                    Keranjang Belanja
+                                </a>
+                                <a href="{{ route('pembeli.order.index') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                    Pesanan Saya
+                                </a>
+                                
+                                <hr class="my-1 border-slate-100">
+
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
+                                        Keluar
+                                    </button>
+                                </form>
                             </div>
-
-                            <a href="{{ route('pembeli.dashboard') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Katalog Sepatu
-                            </a>
-                            <a href="{{ route('pembeli.keranjang') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Keranjang Belanja
-                            </a>
-                            <a href="{{ route('pembeli.order.index') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Pesanan Saya
-                            </a>
-                            
-                            <hr class="my-1 border-slate-100">
-
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition">
-                                    Keluar
-                                </button>
-                            </form>
                         </div>
-                    </div>
+                    @else
+                        {{-- Guest Actions: Login / Register --}}
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('login') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+                                Masuk
+                            </a>
+                            <a href="{{ route('register') }}" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md transition">
+                                Daftar
+                            </a>
+                        </div>
+                    @endauth
+
                 </div>
             </div>
 
             {{-- Mobile Navbar Links --}}
             <div class="flex md:hidden items-center justify-between border-t border-slate-100 py-2.5 text-xs font-semibold">
-                <a href="{{ route('pembeli.dashboard') }}" class="{{ request()->routeIs('pembeli.dashboard') ? 'text-brand-600 font-bold' : 'text-slate-600' }}">Beranda</a>
+                <a href="{{ route('pembeli.dashboard') }}" class="{{ request()->routeIs('pembeli.dashboard') || request()->is('/') ? 'text-brand-600 font-bold' : 'text-slate-600' }}">Beranda</a>
                 <a href="{{ route('pembeli.keranjang') }}" class="{{ request()->routeIs('pembeli.keranjang') ? 'text-brand-600 font-bold' : 'text-slate-600' }}">Keranjang ({{ $cartTotalCount }})</a>
-                <a href="{{ route('pembeli.order.index') }}" class="{{ request()->routeIs('pembeli.order.*') ? 'text-brand-600 font-bold' : 'text-slate-600' }}">Pesanan Saya</a>
+                @auth
+                    <a href="{{ route('pembeli.order.index') }}" class="{{ request()->routeIs('pembeli.order.*') ? 'text-brand-600 font-bold' : 'text-slate-600' }}">Pesanan Saya</a>
+                @else
+                    <a href="{{ route('login') }}" class="text-brand-600 font-bold">Masuk</a>
+                @endauth
             </div>
         </div>
     </header>

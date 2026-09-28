@@ -12,7 +12,11 @@
                 Koleksi Terlengkap & Original
             </span>
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-                Halo {{ Auth::user()->nama_user }}, Temukan Sepatu Impianmu
+                @auth
+                    Halo {{ Auth::user()->nama_user }}, Temukan Sepatu Impianmu
+                @else
+                    Selamat Datang di TukuSepatu, Temukan Sepatu Impianmu
+                @endauth
             </h1>
             <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
                 Pilih berbagai koleksi sepatu sneakers, running, formal, dan kasual berkualitas terbaik dari penjual terpercaya di seluruh Indonesia.
@@ -48,7 +52,7 @@
     {{-- Products Grid --}}
     <div>
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-extrabold text-slate-900">Daftar Sepatu Sepatu Terbaru</h2>
+            <h2 class="text-lg font-extrabold text-slate-900">Daftar Sepatu Terbaru</h2>
             <span class="text-xs text-slate-400 font-semibold">{{ count($produks) }} Produk Ditemukan</span>
         </div>
 
@@ -58,7 +62,7 @@
                     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 hover:shadow-md transition group flex flex-col justify-between">
                         <div>
                             {{-- Product Image / Badge --}}
-                            <div class="h-48 bg-slate-100 flex items-center justify-center relative p-4 overflow-hidden">
+                            <a href="{{ route('pembeli.produk.detail', $p->id_product) }}" class="h-48 bg-slate-100 flex items-center justify-center relative p-4 overflow-hidden block">
                                 @if($p->gambar_product)
                                     <img src="{{ asset('storage/' . $p->gambar_product) }}" alt="{{ $p->nama_product }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 @else
@@ -73,13 +77,15 @@
                                 <span class="absolute top-3 right-3 text-[10px] font-bold bg-white/90 backdrop-blur-sm text-slate-700 px-2 py-0.5 rounded-md border border-slate-200">
                                     {{ $p->kategori ?? 'Umum' }}
                                 </span>
-                            </div>
+                            </a>
 
                             {{-- Product Info --}}
                             <div class="p-4 space-y-2">
-                                <h3 class="font-extrabold text-sm text-slate-800 line-clamp-1" title="{{ $p->nama_product }}">
-                                    {{ $p->nama_product }}
-                                </h3>
+                                <a href="{{ route('pembeli.produk.detail', $p->id_product) }}" class="block group-hover:text-brand-600 transition-colors">
+                                    <h3 class="font-extrabold text-sm text-slate-800 line-clamp-1" title="{{ $p->nama_product }}">
+                                        {{ $p->nama_product }}
+                                    </h3>
+                                </a>
                                 <p class="text-xs text-slate-400 line-clamp-2">{{ $p->deskripsi ?? 'Sepatu berkualitas tinggi nyaman dipakai sehari-hari.' }}</p>
 
                                 <div class="pt-2 flex items-center justify-between">
@@ -93,14 +99,17 @@
                             </div>
                         </div>
 
-                        {{-- Add to Cart Form --}}
-                        <div class="p-4 pt-0">
+                        {{-- Action Buttons --}}
+                        <div class="p-4 pt-0 space-y-2">
+                            <a href="{{ route('pembeli.produk.detail', $p->id_product) }}" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition flex items-center justify-center">
+                                Lihat Detail Produk
+                            </a>
                             @if($p->status_product !== 'habis' && $p->stok > 0)
                                 <form action="{{ route('pembeli.keranjang.add') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="id_product" value="{{ $p->id_product }}">
-                                    <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5">
-                                        <span>+ Tambahkan ke Keranjang</span>
+                                    <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center">
+                                        + Tambahkan ke Keranjang
                                     </button>
                                 </form>
                             @else
