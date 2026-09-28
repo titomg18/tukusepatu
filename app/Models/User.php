@@ -42,6 +42,16 @@ class User extends Authenticatable
         return $this->hasMany(Produk::class, 'penjual_id', 'id_user');
     }
 
+    /**
+     * Relasi ke model Order (Pembelian User).
+     *
+     * @return HasMany<Order, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'pembeli_id', 'id_user');
+    }
+
     // Karena kita tidak pakai remember_token
     public function getRememberToken(): ?string
     {

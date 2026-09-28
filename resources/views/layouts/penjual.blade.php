@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard Penjual - TukuSepatu')</title>
+    <title>@yield('title', 'Katalog Produk Penjual - TukuSepatu')</title>
 
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,12 +63,12 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
     <div class="flex min-h-screen">
-        {{-- ================= SIDEBAR ================= --}}
+        {{-- ================= SIDEBAR PENJUAL ================= --}}
         <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl">
             
             {{-- Brand Logo Header --}}
             <div class="h-20 flex items-center justify-between px-6 border-b border-slate-800/80">
-                <a href="{{ route('penjual.dashboard') }}" class="flex items-center gap-3 group">
+                <a href="{{ route('penjual.produk') }}" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-orange-500 to-amber-400 flex items-center justify-center text-white font-black text-base shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
                         TS
                     </div>
@@ -84,40 +84,25 @@
                 </button>
             </div>
 
-            {{-- Store Quick Status Badge --}}
-            <div class="px-4 py-3 mx-4 my-4 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
-                        <span class="text-xs font-semibold text-slate-200">Status Toko</span>
-                    </div>
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">BUKA</span>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-1 truncate">Toko Sepatu Official</p>
-            </div>
 
-            {{-- Navigation Items --}}
+            {{-- Sidebar Navigation Links (Tanpa Dashboard) --}}
             <nav class="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
                 <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 pt-2 pb-1">Menu Utama</div>
                 
-                <a href="{{ route('penjual.dashboard') }}" 
-                   class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('penjual.dashboard') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 font-semibold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
-                    <span>Dashboard</span>
-                    @if(request()->routeIs('penjual.dashboard'))
-                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                    @endif
-                </a>
-
                 <a href="{{ route('penjual.produk') }}" 
                    class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('penjual.produk') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 font-semibold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                     <span>Katalog Produk</span>
-                    <span class="text-xs bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded-md border border-slate-700">24</span>
+                    @if(request()->routeIs('penjual.produk'))
+                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    @endif
                 </a>
 
                 <a href="{{ route('penjual.pesanan') }}" 
                    class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('penjual.pesanan') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 font-semibold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                     <span>Pesanan Masuk</span>
-                    <span class="text-xs bg-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded-md border border-amber-500/30">5 Baru</span>
+                    @if(request()->routeIs('penjual.pesanan'))
+                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    @endif
                 </a>
 
                 <a href="{{ route('penjual.toko') }}" 
@@ -125,15 +110,6 @@
                     <span>Profil Toko</span>
                 </a>
 
-                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 px-3 pt-5 pb-1">Pengaturan & Bantuan</div>
-
-                <a href="#" class="block px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                    <span>Pengaturan Toko</span>
-                </a>
-
-                <a href="#" class="block px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                    <span>Pusat Bantuan</span>
-                </a>
             </nav>
 
             {{-- Sidebar Footer Card --}}
@@ -168,7 +144,7 @@
                     </button>
 
                     <div class="relative w-full max-w-md hidden md:block">
-                        <input type="text" placeholder="Cari pesanan, nama produk, atau pembeli..." 
+                        <input type="text" placeholder="Cari nama sepatu, pesanan, atau pembeli..." 
                                class="w-full px-4 py-2 bg-slate-100/80 border border-slate-200 rounded-xl text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
                     </div>
                 </div>
@@ -211,14 +187,14 @@
                                 <p class="text-[11px] text-slate-400">{{ Auth::user()->email ?? 'user@tukusepatu.id' }}</p>
                             </div>
 
-                            <a href="{{ route('penjual.toko') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Pengaturan Toko
-                            </a>
                             <a href="{{ route('penjual.produk') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Kelola Produk
+                                Katalog Produk
                             </a>
                             <a href="{{ route('penjual.pesanan') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
-                                Daftar Pesanan
+                                Pesanan Masuk
+                            </a>
+                            <a href="{{ route('penjual.toko') }}" class="block px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-brand-600 transition">
+                                Pengaturan Toko
                             </a>
                             
                             <hr class="my-1 border-slate-100">
